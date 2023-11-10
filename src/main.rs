@@ -52,7 +52,8 @@ fn input(mensagem: &str) -> String {
 // Implementações para a struct 'Usuario'
 impl Usuario {
     pub fn new(nome: String, senha: String) -> Usuario {
-        todo!("Criar função new para usuário!");
+	
+	Usuario{nome, senha:sha256(senha)}
 
         // Não se esqueça de armazenar a senha do usuário como sha256
     }
