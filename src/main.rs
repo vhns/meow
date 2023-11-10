@@ -69,7 +69,7 @@ impl <'a> Cadastro<'a> {
     }
 
     pub fn adiciona_usuario(&mut self, nome: String, senha: String) {
-        todo!("Implementar a adição de usuários ao cadastro!");
+	&self.usuarios.push(Usuario{nome, senha});
     }
 
     fn usuario_existe(&self, nome: &String) -> bool {
