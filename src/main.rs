@@ -23,16 +23,16 @@ fn sha256(texto: String) -> String {
     let dados = Sha256::digest(texto.as_bytes());
 
     // Funções anônimas
-    let to_hex = |x: &u8| {format!("{:02X}", x)}; 
+    let to_hex = |x: &u8| {format!("{:02X}", x)};
     let join   = |acc: String, i: String| {acc + &i};
-    
+
     // Convertendo os dados de bytes para uma String da representação hexadecimal de cada byte
     // .to_vec()                  -> Transforma em vetor (Vec<T>)
-    // .iter()                    -> Transforma o vetor em um iterador, ou seja, um tipo que irá permitir 
+    // .iter()                    -> Transforma o vetor em um iterador, ou seja, um tipo que irá permitir
     //                               utilizarmos as funções abaixo
     // .map(to_hex)               -> Irá iterar por todos os elementos do array de bytes retornado na linha 19
     //                               aplicando a função 'to_hex' para cada elemento
-    // .fold(String::new(), join) -> Irá concatenar o resultado à "String::new()" através da função 'join'. 
+    // .fold(String::new(), join) -> Irá concatenar o resultado à "String::new()" através da função 'join'.
     // Finalmente, o tipo do retorno de todas essas chamadas será uma String, pois todo o resultado é concatenado
     // a uma string vazia (String::new()).
     dados.to_vec().iter().map(to_hex).fold(String::new(), join)
@@ -52,7 +52,7 @@ fn input(mensagem: &str) -> String {
 // Implementações para a struct 'Usuario'
 impl Usuario {
     pub fn new(nome: String, senha: String) -> Usuario {
-	
+
 	Usuario{nome, senha:sha256(senha)}
 
         // Não se esqueça de armazenar a senha do usuário como sha256
