@@ -1,4 +1,5 @@
 use sha2::{Sha256, Digest};
+use std::fmt;
 use std::fs::File;
 use std::io;
 use std::io::{Write, Read};
@@ -50,6 +51,14 @@ fn input(mensagem: &str) -> String {
 }
 
 // Implementações para a struct 'Usuario'
+impl fmt::Debug for Usuario{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result{
+        f.debug_struct("Usuario")
+            .field("nome", &self.nome)
+            .field("senha", &self.senha)
+            .finish()
+    }
+}
 impl Usuario {
     pub fn new(nome: String, senha: String) -> Usuario {
 
@@ -68,8 +77,8 @@ impl <'a> Cadastro<'a> {
         Cadastro{ usuarios: vec![], arquivo_usuarios }
     }
 
-    pub fn adiciona_usuario(&mut self, nome: String, senha: String) {
-	&self.usuarios.push(Usuario{nome, senha});
+    pub fn adiciona_usuario(&mut self, nome: &String, senha: &String) {
+	&self.usuarios.push(Usuario{nome:nome.to_string(), senha:senha.to_string()});
     }
 
     fn usuario_existe(&self, nome: &String) -> bool {
@@ -79,8 +88,26 @@ impl <'a> Cadastro<'a> {
         return false
     }
 
-    fn salvar(&self) -> std::io::Result<()> {
-        todo!("Implementar o salvamento de arquivos!");
+    fn salvar(&self, mut file: &File, i:&isize) -> std::io::Result<()> {
+        let f = match File::options().append(true).open(&self.arquivo_usuarios){
+            Err(e) => panic!("Erro ao abrir o arquivo pelo motivo {}", e),
+            Ok(f) => {&file}
+        };
+
+        let conteudo: &Usuario = &self.usuarios[*i as usize];
+
+        match writeln!(&mut file, "{:?}",conteudo){
+            Err(e) => panic!("Erro ao escrever no arquivo pelo motivo {}", e),
+            Ok(()) => {}
+        }
+            
+        match file.flush(){
+            Err(e) => panic!("Erro ao salvar o arquivo pelo motivo {}", e),
+            Ok(()) => {}
+        }
+
+        Ok(())
+
     }
 
     fn autenticar(&self, nome: String, senha: String) -> bool {
@@ -107,6 +134,30 @@ impl <'a> Cadastro<'a> {
     }
 }
 
-fn main(){
-    todo!("Implemente o sistema a partir daqui");
+fn main() {
+        let path = Path::new("foo.txt");
+        let mut f = match File::create(path){
+            Err(e) => panic!("Erro ao ler o arquivo pelo motivo {}", e),
+            Ok(f) => {f}
+        };
+        let mut cadastro: Cadastro = Cadastro::new(&path);
+        while true{
+            let mut nome: String = String::from("");
+            let mut senha: String = String::from("");
+            println!("Digite o seu username: ");
+            io::stdin().read_line(&mut nome).expect("Erro ao ler o username");
+            println!("Digite a sua senha: ");
+            io::stdin().read_line(&mut senha).expect("Erro ao ler a senha");
+            let nome_s: String = nome.trim().parse().expect("Erro ao transformar o username");
+            let senha_s:String = nome.trim().parse().expect("Erro ao transformar a senha");
+            let user: Usuario = Usuario::new(nome_s, senha_s);
+            if cadastro.usuario_existe(&user.nome).eq(&false){
+                cadastro.adiciona_usuario(&user.nome, &user.senha);
+                let i = cadastro.retorna_indice_usuario(&user.nome);
+                println!("Usuario {} cadastrado com sucesso", user.nome);
+                cadastro.salvar(&f, &i);
+            }else{
+                println!("Usuario {} já existe", user.nome);
+            }
+        }
 }
