@@ -1,3 +1,4 @@
+// João Henrique / Vitor Hugo / Marco aurélio
 extern crate sha2;
 use sha2::{Sha256, Digest};
 use std::fmt;
